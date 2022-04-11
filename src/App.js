@@ -5,31 +5,26 @@ import './App.css';
 
 import LoginModal  from './Container/Login';
 import SignUpModal from "./Container/Signup";
-import goServer    from "./Server/goServer";
+import goServerWithToken from "./Server/goServerWithToken";
 
 function App( props ) {
     const [showLogin,  setShowLogin]  = useState(false);
     const [showSignup, setShowSignup] = useState(false);
 
     const logout = async () => {
-        try {
-            const res = await goServer( '/api/logout/', 'post', {}, {
-                "Content-Type": "application/json",
-                "token": window.sessionStorage.getItem("access_token")
-            });
-            console.log(res);
-
-            props.dispatch( { type: "isLogin/turn-off" } )
-            window.sessionStorage.setItem('access_token',  "");
-            window.sessionStorage.setItem('refresh_token', "");
-        } catch( e ) {
-            console.log(e);
+        const res = await goServerWithToken( '/api/logout/', 'post', {} );
+        if( res !== null ) {
+            if( res.message.status === "ROUTINE_LOGOUT_OK" ) {
+                props.dispatch( { type: "isLogin/turn-off" } );
+                window.sessionStorage.setItem('access_token',  "");
+                window.sessionStorage.setItem('refresh_token', "");
+            }
         }
     }
 
     return (
         <div className="App">
-            <div className="navbar navbar-inverse fixed-top">
+            <div className="navbar navbar-inverse fixed-top" style={{ background: "#eee" }}>
                 <Container>
                     <div className='navbar-header'>
                         <span className='navbar-brand'> Danbi Routine </span>
@@ -50,10 +45,16 @@ function App( props ) {
                     </div>
                 </Container>
             </div>
-
+            
             <Container className="main-contents">
-                hi
+
             </Container>
+
+            <Button 
+                className="btn-fixed"
+                onClick={() => {
+                }}
+            >+</Button>
 
             <LoginModal 
                 show={showLogin}

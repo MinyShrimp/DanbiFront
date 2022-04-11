@@ -5,6 +5,12 @@
 
 .main-contents {
     padding-top: 60px;
-    padding-bottom: 60px;
+    padding-bottom: 10px;
     height: 100vh;
+}
+
+.btn-fixed {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
 }

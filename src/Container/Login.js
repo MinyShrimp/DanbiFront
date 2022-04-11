@@ -13,12 +13,10 @@ const LoginModal = ( props ) => {
             window.sessionStorage.setItem('access_token',  res.data.access_token);
             window.sessionStorage.setItem('refresh_token', res.data.refresh_token);
 
-            // const msg = res.message.msg;
-
             props.dispatch( { type: "isLogin/turn-on" } )
             props.handleClose();
         } catch( e ) {
-            props.dispatch( { type: "isAlert/turn-on", value: e.msg } )
+            props.dispatch( { type: "isAlert/turn-on", value: e.msg } );
         }
     };
 
