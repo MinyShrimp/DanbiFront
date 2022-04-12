@@ -3,11 +3,19 @@ import Config from './Config';
 
 const goServer = async ( api, method, body = {}, headers = Config.headers ) => {
     try{
-        const res = await fetch( Config.serverIP + api, {
-            method: method,
-            headers: headers,
-            body: body
-        });
+        var res = null;
+        if(method === 'get' || method === 'GET') {
+            res = await fetch( Config.serverIP + api, {
+                method: method,
+                headers: headers
+            });
+        } else {
+            res = await fetch( Config.serverIP + api, {
+                method: method,
+                headers: headers,
+                body: body
+            });
+        }
         
         return new Promise(async (resolve, reject) => {
             if(res.ok) {

@@ -2,14 +2,13 @@
 const nullAccount = { email: "", pwd: "" };
 
 const accountReducer = (state = nullAccount, action) => {
+    var _state = JSON.parse( JSON.stringify(state) );
     switch( action.type ) {
         case 'Account/change-email':
-            var _state = JSON.parse( JSON.stringify(state) );
             _state.email = action.value;
             return _state;
         
         case 'Account/change-pwd':
-            var _state = JSON.parse( JSON.stringify(state) );
             _state.pwd = action.value;
             return _state;
             

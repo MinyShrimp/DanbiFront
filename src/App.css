@@ -1,12 +1,22 @@
+body { 
+    overflow-x:hidden; 
+}
+
 .App {
     width: 100vw;
     height: 100vh;
 }
 
+.main-header {
+    padding-left: 0;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
 .main-contents {
-    padding-top: 60px;
+    padding-top: 62px;
     padding-bottom: 10px;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .btn-fixed {

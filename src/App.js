@@ -1,15 +1,47 @@
-import { Button, Container, Nav } from "react-bootstrap";
-import { useState } from 'react';
+import { Button, Container, Row, Col } from "react-bootstrap";
+import { useEffect, useState } from 'react';
 import { connect } from "react-redux";
 import './App.css';
 
-import LoginModal  from './Container/Login';
-import SignUpModal from "./Container/Signup";
+import LoginModal  from './Container/Modal/Login';
+import SignUpModal from "./Container/Modal/Signup";
+import DeleteModal from "./Container/Modal/DeleteModal";
+import AddModal    from "./Container/Modal/AddModal";
+import UpdateModal from "./Container/Modal/UpdateModal";
+import MainPage    from "./Container/MainPage";
+import DayButtons  from "./Container/DayButtons";
+
 import goServerWithToken from "./Server/goServerWithToken";
 
 function App( props ) {
     const [showLogin,  setShowLogin]  = useState(false);
     const [showSignup, setShowSignup] = useState(false);
+    const [showAdd,    setShowAdd]    = useState(false);
+    const [showUpdate, setShowUpdate] = useState(false);
+    const [showDelete, setShowDelete] = useState(false);
+    const [once,       setOnce]       = useState(false);
+    const [mainpage,   setMainpage]   = useState(false);
+
+    useEffect(() => {
+        const access = window.sessionStorage.getItem("access_token");
+        const is_login = window.sessionStorage.getItem("is_login");
+        if( access !== null && is_login !== null ) {
+            if( is_login && !once ) {
+                auto_login();
+                setOnce(true);
+            }
+        }
+    }, []);
+
+    const auto_login = async () => {
+        const res = await goServerWithToken("/api/autologin/", "post", {});
+        if( res !== null ) {
+            if( res.message.status === "ROUTINE_LOGIN_OK" ) {
+                props.dispatch( { type: "isLogin/turn-on" } );
+                props.dispatch( { type: "getAll/switch" } );
+            }
+        }
+    }
 
     const logout = async () => {
         const res = await goServerWithToken( '/api/logout/', 'post', {} );
@@ -18,6 +50,9 @@ function App( props ) {
                 props.dispatch( { type: "isLogin/turn-off" } );
                 window.sessionStorage.setItem('access_token',  "");
                 window.sessionStorage.setItem('refresh_token', "");
+                window.sessionStorage.setItem('is_login', false);
+
+                props.dispatch({ type: "Routines/reset" });
             }
         }
     }
@@ -47,23 +82,64 @@ function App( props ) {
             </div>
             
             <Container className="main-contents">
-
+                <DayButtons 
+                    setMainpage = {setMainpage}
+                />
+                <MainPage
+                    setShowDelete = { setShowDelete }
+                    setShowUpdate = { setShowUpdate }
+                    mainpage = { mainpage }
+                />
             </Container>
 
             <Button 
                 className="btn-fixed"
                 onClick={() => {
+                    setShowAdd(true);
+                    props.dispatch({ type: 'Routine/reset' }); 
+                    props.dispatch({ type: "Checks/reset", value: props.days });
                 }}
             >+</Button>
 
             <LoginModal 
                 show={showLogin}
-                handleClose={() => { props.dispatch({ type: 'isAlert/turn-off' }); setShowLogin(false); }}
+                handleClose={() => { 
+                    props.dispatch({ type: 'isAlert/turn-off' }); 
+                    setShowLogin(false); 
+                }}
             />
 
             <SignUpModal 
                 show={showSignup}
-                handleClose={() => { props.dispatch({ type: 'isAlert/turn-off' }); setShowSignup(false); }}
+                handleClose={() => { 
+                    props.dispatch({ type: 'isAlert/turn-off' }); 
+                    setShowSignup(false); 
+                }}
+            />
+
+            <AddModal 
+                show={showAdd}
+                handleClose={() => { 
+                    props.dispatch({ type: 'Routine/reset' }); 
+                    props.dispatch({ type: 'isAlert/turn-off' });
+                    setShowAdd(false); 
+                }}
+            />
+
+            <UpdateModal 
+                show={showUpdate}
+                handleClose={() => { 
+                    props.dispatch({ type: 'isAlert/turn-off' });
+                    setShowUpdate(false); 
+                }}
+            />
+
+            <DeleteModal 
+                show={showDelete}
+                handleClose={() => { 
+                    props.dispatch({ type: 'isAlert/turn-off' }); 
+                    setShowDelete(false); 
+                }}
             />
         </div>
     );

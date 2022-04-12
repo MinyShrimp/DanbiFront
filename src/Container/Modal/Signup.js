@@ -1,16 +1,20 @@
+import { useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { connect } from "react-redux";
 
-import goServer    from "../Server/goServer";
+import goServer    from "../../Server/goServer";
 import MyModal     from "./Modal";
-import AccountForm from "./Account";
+import AccountForm from "../Form/Account";
 
 const SignUpModal = ( props ) => {
+    useEffect(() => {
+        props.dispatch({ type: "Account/change-email", value: "" });
+        props.dispatch({ type: "Account/change-pwd", value: "" });
+    }, [props.show]);
+
     const submit = async () => {
         try {
             const res = await goServer( '/api/signup/', 'post', JSON.stringify( props.account ) );
-            console.log(res);
-
             props.handleClose();
         } catch( e ) {
             props.dispatch( { type: "isAlert/turn-on", value: e.msg } )
