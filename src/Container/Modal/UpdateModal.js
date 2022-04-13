@@ -11,7 +11,13 @@ const UpdateModal = ( props ) => {
         if( res !== null ) {
             if( res.message.status === "ROUTINE_UPDATE_OK" ) {
                 props.handleClose();
-                props.dispatch({ type: "getAll/switch" });
+                
+                if( props.isAll.isAll ) {
+                    props.dispatch({ type: "getAll/switch" });
+                } else {
+                    props.dispatch({ type: "getDays/switch" });
+                    props.dispatch({ type: "getDays/change-value", value: props.getDays.value });
+                }
             }
         } else {
             props.dispatch( { type: "isAlert/turn-on", value: "업데이트를 실패했습니다." } );
@@ -33,7 +39,7 @@ const UpdateModal = ( props ) => {
 }
 
 function setStore(state) {
-    return { routine: state.routineReducer }
+    return { routine: state.routineReducer, isAll: state.isAllReducer, getDays: state.getDaysReducer }
 }
 
 export default connect(setStore)(UpdateModal);

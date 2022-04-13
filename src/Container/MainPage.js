@@ -1,17 +1,17 @@
 import { connect } from "react-redux";
-import UseAllDatas from "../Server/UseAllDatas";
-import UseDatasDate from "../Server/UseDatasDate";
+import UseAllDatas from "./UseAllDatas";
+import UseDatasDate from "./UseDatasDate";
 
 const MainPage = ( props ) => {
     return (
         <>
             {
-                props.mainpage ?  
-                <UseDatasDate 
+                props.isAll.isAll ?  
+                <UseAllDatas 
                     setShowDelete = { props.setShowDelete }
                     setShowUpdate = { props.setShowUpdate }
                 /> :
-                <UseAllDatas 
+                <UseDatasDate 
                     setShowDelete = { props.setShowDelete }
                     setShowUpdate = { props.setShowUpdate }
                 />
@@ -21,7 +21,7 @@ const MainPage = ( props ) => {
 }
 
 function setStore(state) {
-    return { routines: state.routinesReducer }
+    return { isAll: state.isAllReducer }
 }
 
 export default connect(setStore)(MainPage);

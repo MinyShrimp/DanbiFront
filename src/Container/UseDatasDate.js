@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import RoutineItem from "../Container/RoutineItem";
-import goServerWithToken from "./goServerWithToken";
+import goServerWithToken from "../Server/goServerWithToken";
 
-const UseAllDatas = ( props ) => {
-    useEffect( () => {
-        __get_all_data();
-    }, [props.getAll.Flag]);
-
+const UseDatasDate = ( props ) => {
     const [lock, setLock] = useState(false);
+    
+    useEffect( () => {
+        __get_search_datas();
+    }, [props.getDays]);
 
-    const __get_all_data = async () => {
+    const __get_search_datas = async () => {
         if( !lock ) {
             setLock(true);
-            const res = await goServerWithToken( '/api/routines/all/', 'get' );
+            const res = await goServerWithToken( '/api/routines/?day=' + props.getDays.value, 'GET' );
             if( res !== null ) {
-                if( res.message.status === "ROUTINE_ALL_OK" ) {
+                if( res.message.status === "ROUTINE_LIST_OK" ) {
                     const datas = res.data;
                     props.dispatch({ type: "Routines/reset" });
                     for(var i = 0; i < datas.length; i++) {
@@ -57,7 +57,7 @@ const UseAllDatas = ( props ) => {
 }
 
 function setStore(state) {
-    return { routines: state.routinesReducer, getAll: state.getAllReducer }
+    return { routines: state.routinesReducer, getDays: state.getDaysReducer }
 }
 
-export default connect(setStore)(UseAllDatas);
+export default connect(setStore)(UseDatasDate);

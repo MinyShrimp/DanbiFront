@@ -12,13 +12,19 @@ const DeleteModal = ( props ) => {
             "routine_id": props.selectRoutine.id,
             "day": props.selectRoutine.days
         }
-        const res = await goServerWithToken('/api/routine', 'delete', JSON.stringify( body ));
+        const res = await goServerWithToken('/api/routine/', 'delete', JSON.stringify( body ));
 
         if( res !== null ) {
             if( res.message.status === "ROUTINE_DELETE_OK" ) {
                 props.handleClose();
-                props.dispatch({ type: "Routines/delete-item", key: props.selectRoutine.key })
-                props.dispatch({ type: "getAll/switch" });
+                props.dispatch({ type: "Routines/delete-item", key: props.selectRoutine.key });
+                
+                if( props.isAll.isAll ) {
+                    props.dispatch({ type: "getAll/switch" });
+                } else {
+                    props.dispatch({ type: "getDays/switch" });
+                    props.dispatch({ type: "getDays/change-value", value: props.getDays.value });
+                }
             }
         } else {
             props.dispatch( { type: "isAlert/turn-on", value: "삭제를 실패했습니다." } );
@@ -41,7 +47,7 @@ const DeleteModal = ( props ) => {
 }
 
 function setStore(state) {
-    return { selectRoutine: state.selectRoutineReducer }
+    return { selectRoutine: state.selectRoutineReducer, isAll: state.isAllReducer, getDays: state.getDaysReducer }
 }
 
 export default connect(setStore)(DeleteModal);

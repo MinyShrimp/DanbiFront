@@ -1,10 +1,42 @@
 
 import { Form, Card, Col, Row, Button, ButtonGroup } from "react-bootstrap";
 import { connect } from "react-redux";
+import goServerWithToken from "../Server/goServerWithToken";
 
 const RoutineItem = ( props ) => {
-    const submit = (e) => {
-        props.dispatch({ type: "Routines/change-result", key: props.index, result: e.target.value });
+    const submit = async (e) => {
+        const body = {
+            "routine_id": props.id,
+            "result"    : e.target.value
+        };
+        const res = await goServerWithToken( "/api/result/", "put", JSON.stringify(body) )
+        if( res !== null ) {
+            if( res.message.status === "ROUTINE_RESULT_OK" ) {
+                props.dispatch({ type: "Routines/change-result", key: props.index, result: e.target.value });
+                
+                if( props.isAll.isAll ) {
+                    props.dispatch({ type: "getAll/switch" });
+                } else {
+                    props.dispatch({ type: "getDays/switch" });
+                    props.dispatch({ type: "getDays/change-value", value: props.getDays.value });
+                }
+            }
+        } else {
+        }
+    }
+
+    const day_convertor = () => {
+        const day_str = { "MON": "월", "TUE": "화", "WED": "수", "THU": "목", "FRI": "금", "SAT": "토", "SUN": "일" };
+        var result = "";
+        props.days.forEach((value, index) => {
+            result += day_str[value] + ( index === props.days.length - 1 ? "" : ", " );
+        });
+        return result;
+    }
+
+    const category_convertor = () => {
+        const category_str = { "MIRACLE": "기상", "HOMEWORK": "숙제" };
+        return category_str[props.category];
     }
 
     return (
@@ -19,7 +51,7 @@ const RoutineItem = ( props ) => {
                 <Card.Body>
                         <Row className="mb-2">
                             <Col>
-                                <div> <h5>{ props.category }</h5>🕐&nbsp;&nbsp;{ props.days }</div>
+                                <div> <h5>{ category_convertor() }</h5>🕐&nbsp;&nbsp;{ day_convertor() }</div>
                             </Col>
                             <Col xs={4}>
                                 <Form.Select
@@ -28,7 +60,7 @@ const RoutineItem = ( props ) => {
                                 >
                                     <option value="NOT">아직 안함</option>
                                     <option value="TRY">시도 중</option>
-                                    <option value="DOEN">완료</option>
+                                    <option value="DONE">완료</option>
                                 </Form.Select>
                             </Col>
                         </Row>
@@ -73,7 +105,7 @@ const RoutineItem = ( props ) => {
 }
 
 function setStore(state) {
-    return {}
+    return { isAll: state.isAllReducer, getDays: state.getDaysReducer }
 }
 
 export default connect(setStore)(RoutineItem);

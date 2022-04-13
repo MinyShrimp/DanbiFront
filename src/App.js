@@ -20,7 +20,6 @@ function App( props ) {
     const [showUpdate, setShowUpdate] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [once,       setOnce]       = useState(false);
-    const [mainpage,   setMainpage]   = useState(false);
 
     useEffect(() => {
         const access = window.sessionStorage.getItem("access_token");
@@ -83,12 +82,10 @@ function App( props ) {
             
             <Container className="main-contents">
                 <DayButtons 
-                    setMainpage = {setMainpage}
                 />
                 <MainPage
                     setShowDelete = { setShowDelete }
                     setShowUpdate = { setShowUpdate }
-                    mainpage = { mainpage }
                 />
             </Container>
 
